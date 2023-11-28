@@ -8,8 +8,7 @@ from typing import List
 
 env = gym.make('ChessAlphaZero-v0')
 
-#encoding func from alpha zero:
-
+# Кодировачные функции из alpha zero:
 
 def encodeBoardFromFen(fen: str) -> np.array:
 	board = chess.Board(fen)
@@ -24,19 +23,19 @@ def encodeBoard(board: chess.Board) -> np.array:
 		rank, file = chess.square_rank(square), chess.square_file(square)
 		piece_type, color = piece.piece_type, piece.color
 	
-		# The first six planes encode the pieces of the active player, 
-		# the following six those of the active player's opponent. Since
-		# this class always stores boards oriented towards the white player,
-		# White is considered to be the active player here.
+        # Первые 6 плоскостей кодируют фигуры активного игрока. 
+        # Следующие 6 - фигуры активного опонента.
+        # Данный класс хранит доски, ориентированные на белого игрока.
+        # Белые считаются за активного игрока.
 		offset = 0 if color == chess.WHITE else 6
 		
-		# Chess enumerates piece types beginning with one, which we have
-		# to account for
+		# В шахматах типы фигур начинаются с единицы,
+		# это необходимо учитывать
 		idx = piece_type - 1
 	
 		array[rank, file, idx + offset] = 1
 
-	# Repetition counters
+	# Счетчики повторений
 	array[:, :, 12] = board.is_repetition(2)
 	array[:, :, 13] = board.is_repetition(3)
 
@@ -46,15 +45,15 @@ def encodeBoard(board: chess.Board) -> np.array:
 def decodeMove(move: int):
 	return env.decode(move)
 
-#fixing encoding funcs from openai
+# Исправление функций кодирования из openai
 
 def encodeKnight(move: chess.Move):
     _NUM_TYPES: int = 8
 
-    #: Starting point of knight moves in last dimension of 8 x 8 x 73 action array.
+    #: Начальная точка хода коня находится в последнем измерении массива действий 8 x 8 x 7.
     _TYPE_OFFSET: int = 56
 
-    #: Set of possible directions for a knight move, encoded as 
+    #: Набор возможных направлений хода коня, закодированный как
     #: (delta rank, delta square).
     _DIRECTIONS = utils.IndexedTuple(
         (+2, +1),
@@ -87,7 +86,7 @@ def encodeKnight(move: chess.Move):
 
 
 def encodeQueen(move: chess.Move):
-    _NUM_TYPES: int = 56 # = 8 directions * 7 squares max. distance
+    _NUM_TYPES: int = 56 # = 8 направлений * 7 (максимальное расстояние до квадрата)
     _DIRECTIONS = utils.IndexedTuple(
         (+1,  0),
         (+1, +1),
@@ -136,7 +135,7 @@ def encodeQueen(move: chess.Move):
 
 
 def encodeUnder(move):
-    _NUM_TYPES: int = 9 # = 3 directions * 3 piece types (see below)
+    _NUM_TYPES: int = 9 # = 3 направления * 3 типа фигуры (см. ниже)
     _TYPE_OFFSET: int = 64
     _DIRECTIONS = utils.IndexedTuple(
         -1,
@@ -198,12 +197,12 @@ def encodeMove(move: str, board) -> int:
 
     return action
 
-#function to encode all moves and positions from rawData folder
+# Функция для кодирования всех ходов и позиций из папки rawData
 def encodeAllMovesAndPositions():
-    board = chess.Board() #this is used to change whose turn it is so that the encoding works
-    board.turn = False #set turn to black first, changed on first run
+    board = chess.Board() # Это используется для изменения, чья сейчас очередь, чтобы кодирование работало
+    board.turn = False # Сначала передать ход чёрным, измениться при первом запуске
 
-    #find all files in folder:
+    # Найти все файлы в папке:
     files = os.listdir('data/rawData')
     for idx, f in enumerate(files):
         movesAndPositions = np.load(f'data/rawData/{f}', allow_pickle=True)
@@ -214,13 +213,15 @@ def encodeAllMovesAndPositions():
 
 
         for i in range(len(moves)):
-            board.turn = (not board.turn) #swap turns
+            board.turn = (not board.turn) # Поменять местами ходы
             try:
                 encodedMoves.append(encodeMove(moves[i], board)) 
                 encodedPositions.append(encodeBoardFromFen(positions[i]))
             except:
                 try:
-                    board.turn = (not board.turn) #change turn, since we skip moves sometimes, we might need to change turn
+                    # Сменить ход, так как мы иногда пропускаем ходы, 
+                    # возможно, нам придется сменить ход
+                    board.turn = (not board.turn)
                     encodedMoves.append(encodeMove(moves[i], board)) 
                     encodedPositions.append(encodeBoardFromFen(positions[i]))
                 except:
@@ -236,7 +237,6 @@ def encodeAllMovesAndPositions():
     
 encodeAllMovesAndPositions()
 
-#NOTE: shape of files:
-#moves: (number of moves in gamew)
-#positions: (number of moves in game, 8, 8, 14) (number of moves in game is including both black and white moves)
-
+#NOTE: формаn файлов:
+#moves: (количество ходов в игре)
+#positions: (количество ходов в игре, 8, 8, 14) (количество ходов в игре включает как ходы чёрных, так и ходы белых)

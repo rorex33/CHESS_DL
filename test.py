@@ -20,24 +20,28 @@ from Training import Model
 
 saved_model = Model()
 
-#load best model path from your file
+# Загрузить лучшую модель
 f = open("./savedModels/bestModel.txt", "r")
 bestLoss = float(f.readline())
 model_path = f.readline()
 f.close()
 
-saved_model.load_state_dict(torch.load(model_path))
+saved_model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 
-#play your own game
+# Запустить игру
 board = chess.Board()
 
 while(True):
+    print("Введите ход:")
     moveStr = input()
     move = chess.Move.from_uci(moveStr)
     board.push(move)
 
-    #make ai move:
+    # Заставить ИИ сделать ход
     aiMove = saved_model.predict(board)
+    print("Ход ИИ:")
     print(aiMove)
     board.push(aiMove)
+    print("Доска:")
     print(board)
+    print()

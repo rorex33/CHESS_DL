@@ -20,16 +20,16 @@ BATCH_SIZE = 4
 
 
 
-#helper methods:
+# Вспомогательный метод:
 
-#decoding moves from idx to uci notation
+# Декодирование ходов из idx в uci нотацию
 def _decodeKnight(action: int) -> Optional[chess.Move]:
     _NUM_TYPES: int = 8
 
-    #: Starting point of knight moves in last dimension of 8 x 8 x 73 action array.
+    #: Начальная точка хода коня находится в последнем измерении массива действий 8 x 8 x 73
     _TYPE_OFFSET: int = 56
 
-    #: Set of possible directions for a knight move, encoded as 
+    #: Набор возможных направлений хода коня, закодированный как
     #: (delta rank, delta square).
     _DIRECTIONS = utils.IndexedTuple(
         (+2, +1),
@@ -64,9 +64,9 @@ def _decodeKnight(action: int) -> Optional[chess.Move]:
 
 def _decodeQueen(action: int) -> Optional[chess.Move]:
 
-    _NUM_TYPES: int = 56 # = 8 directions * 7 squares max. distance
+    _NUM_TYPES: int = 56 # = 8 направлений * 7 (максимальное расстояние до квадрата)
 
-    #: Set of possible directions for a queen move, encoded as 
+    #: Набор возможных направлений хода ферзя, закодированный как
     #: (delta rank, delta square).
     _DIRECTIONS = utils.IndexedTuple(
         (+1,  0),
@@ -103,21 +103,20 @@ def _decodeQueen(action: int) -> Optional[chess.Move]:
     return move
 
 def _decodeUnderPromotion(action):
-    _NUM_TYPES: int = 9 # = 3 directions * 3 piece types (see below)
+    _NUM_TYPES: int = 9 #  3 направления * 3 типа фигуры (см. ниже)
 
-    #: Starting point of underpromotions in last dimension of 8 x 8 x 73 action 
-    #: array.
+    #: Начальная точка  слабого превращения в последнем измерении массива действий 8 x 8 x 73.
     _TYPE_OFFSET: int = 64
 
-    #: Set of possibel directions for an underpromotion, encoded as file delta.
+    #: Набор возможных направлений для слабого превращения, закодированный как дельта-файл.
     _DIRECTIONS = utils.IndexedTuple(
         -1,
         0,
         +1,
     )
 
-    #: Set of possibel piece types for an underpromotion (promoting to a queen
-    #: is implicitly encoded by the corresponding queen move).
+    #: Набор возможных типов фигур для слабого превращения
+    #: (превращение в ферзя неявно кодируется соответствующим ходом ферзя)
     _PROMOTIONS = utils.IndexedTuple(
         chess.KNIGHT,
         chess.BISHOP,
@@ -152,7 +151,7 @@ def _decodeUnderPromotion(action):
 
     return move
 
-#primary decoding function, the ones above are just helper functions
+# основная функция декодирования, приведенные выше — всего лишь вспомогательные функции
 def decodeMove(action: int, board) -> chess.Move:
         move = _decodeQueen(action)
         is_queen_move = move is not None
@@ -166,18 +165,18 @@ def decodeMove(action: int, board) -> chess.Move:
         if not move:
             raise ValueError(f"{action} is not a valid action")
 
-        # Actions encode moves from the perspective of the current player. If
-        # this is the black player, the move must be reoriented.
+        # Действия кодируют ходы с точки зрения текущего игрока.
+        # Если это черный игрок, ход необходимо переориентировать.
         turn = board.turn
         
-        if turn == False: #black to move
+        if turn == False: # Ход чёрных
             move = utils.rotate(move)
 
-        # Moving a pawn to the opponent's home rank with a queen move
-        # is automatically assumed to be queen underpromotion. However,
-        # since queenmoves has no reference to the board and can thus not
-        # determine whether the moved piece is a pawn, you have to add this
-        # information manually here
+        # Перемещение пешки на домашнюю горизонталь противника ходом ферзя 
+        # автоматически считается слабым повышением ферзя.
+        # Однако, поскольку ходы ферзя не имеют ссылки на доску и, 
+        # следовательно, не могут определить, является ли ходовая фигура пешкой,
+        # придется добавить эту информацию сюда вручную.
         if is_queen_move:
             to_rank = chess.square_rank(move.to_square)
             is_promoting_move = (
@@ -186,7 +185,7 @@ def decodeMove(action: int, board) -> chess.Move:
             )
 
             piece = board.piece_at(move.from_square)
-            if piece is None: #NOTE I added this, not entirely sure if it's correct
+            if piece is None: #NOTE ВОЗМОЖНО ЭТО НЕПРАВИЛЬНО
                 return None
             is_pawn = piece.piece_type == chess.PAWN
 
@@ -204,33 +203,34 @@ def encodeBoard(board: chess.Board) -> np.array:
   rank, file = chess.square_rank(square), chess.square_file(square)
   piece_type, color = piece.piece_type, piece.color
  
-  # The first six planes encode the pieces of the active player, 
-  # the following six those of the active player's opponent. Since
-  # this class always stores boards oriented towards the white player,
-  # White is considered to be the active player here.
+    # Первые 6 плоскостей кодируют фигуры активного игрока. 
+    # Следующие 6 - фигуры активного опонента.
+    # Данный класс хранит доски, ориентированные на белого игрока.
+    # Белые считаются за активного игрока.
   offset = 0 if color == chess.WHITE else 6
   
-  # Chess enumerates piece types beginning with one, which you have
-  # to account for
+    # В шахматах типы фигур начинаются с единицы,
+	# это необходимо учитывать
   idx = piece_type - 1
  
   array[rank, file, idx + offset] = 1
 
- # Repetition counters
+ # Счетчики повторений
  array[:, :, 12] = board.is_repetition(2)
  array[:, :, 13] = board.is_repetition(3)
 
  return array
 
+
 #dataset
 
-#loading training data
+# Загрузка данных обучения
 
 allMoves = []
 allBoards = []
 
 files = os.listdir('data/preparedData')
-numOfEach = len(files) // 2 # half are moves, other half are positions
+numOfEach = len(files) // 2 # Половина - ходы, другая половина - позиции
 
 for i in range(numOfEach):
     try:
@@ -247,19 +247,19 @@ allMoves = np.array(allMoves)[:(int(len(allMoves) * FRACTION_OF_DATA))]
 allBoards = np.array(allBoards)[:(int(len(allBoards) * FRACTION_OF_DATA))]
 assert len(allMoves) == len(allBoards), "MUST BE OF SAME LENGTH"
 
-#flatten out boards
+# Выровнять доски
 # allBoards = allBoards.reshape(allBoards.shape[0], -1)
 
 trainDataIdx = int(len(allMoves) * 0.8)
 
-#NOTE transfer all data to GPU if available
+#NOTE Перенести все данные на GPU, если он доступен
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 allBoards = torch.from_numpy(np.asarray(allBoards)).to(device)
 allMoves = torch.from_numpy(np.asarray(allMoves)).to(device)
 
 training_set = torch.utils.data.TensorDataset(allBoards[:trainDataIdx], allMoves[:trainDataIdx])
 test_set = torch.utils.data.TensorDataset(allBoards[trainDataIdx:], allMoves[trainDataIdx:])
-# Create data loaders for your datasets; shuffle for training, not for validation
+# Создаваёт загрузчики данных для наших наборов данных; перетасовывает их для обучения, а не для проверки
 
 training_loader = torch.utils.data.DataLoader(training_set, batch_size=BATCH_SIZE, shuffle=True)
 validation_loader = torch.utils.data.DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=False)
@@ -269,12 +269,12 @@ class Model(torch.nn.Module):
     def __init__(self):
         super(Model, self).__init__()
         self.INPUT_SIZE = 896 
-        # self.INPUT_SIZE = 7*7*13 #NOTE changing input size for using cnns
-        self.OUTPUT_SIZE = 4672 # = number of unique moves (action space)
+        # self.INPUT_SIZE = 7*7*13 #NOTE изменение размера ввода для использования cnn (в будущем)
+        self.OUTPUT_SIZE = 4672 # = количество уникальных ходов (пространство действия)
         
-        #can try to add CNN and pooling here (calculations taking into account spacial features)
+        # Нужно попробовать внести сюда CNN и пулинг (и узнать, что это)
 
-        #input shape for sample is (8,8,14), flattened to 1d array of size 896
+        # Входная форма для выборки: (8,8,14), сведенная до одномерного массива размером 896.
         # self.cnn1 = nn.Conv3d(4,4,(2,2,4), padding=(0,0,1))
         self.activation = torch.nn.ReLU()
         self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 1000)
@@ -282,11 +282,12 @@ class Model(torch.nn.Module):
         self.linear3 = torch.nn.Linear(1000, 1000)
         self.linear4 = torch.nn.Linear(1000, 200)
         self.linear5 = torch.nn.Linear(200, self.OUTPUT_SIZE)
-        self.softmax = torch.nn.Softmax(1) #use softmax as prob for each move, dim 1 as dim 0 is the batch dimension
+        self.softmax = torch.nn.Softmax(1) # Использовать softmax в качестве пробы для каждого хода, dim 1, 
+        #поскольку dim 0 — размер пакета
  
     def forward(self, x): #x.shape = (batch size, 896)
         x = x.to(torch.float32)
-        # x = self.cnn1(x) #for using cnns
+        # x = self.cnn1(x) # Для использования CNN
         x = x.reshape(x.shape[0], -1)
         x = self.linear1(x)
         x = self.activation(x)
@@ -297,7 +298,7 @@ class Model(torch.nn.Module):
         x = self.linear4(x)
         x = self.activation(x)
         x = self.linear5(x)
-        # x = self.softmax(x) #do not use softmax since you are using cross entropy loss
+        # x = self.softmax(x) # Здесь softmax лучше не юзать, прочитал на stack overflow
         return x
 
     def predict(self, board : chess.Board):
@@ -309,57 +310,57 @@ class Model(torch.nn.Module):
             res = self.forward(encodedBoard)
             probs = self.softmax(res)
 
-            probs = probs.numpy()[0] #do not want tensor anymore, 0 since it is a 2d array with 1 row
+            probs = probs.numpy()[0] # Тензор больше не нужен, 0, так как это двумерный массив с 1 строкой
 
-            #verify that move is legal and can be decoded before returning
-            while len(probs) > 0: #try max 100 times, if not throw an error
+            # Перед возвратом убедиться, что ход возможен и может быть декодирован перед возвратом
+            while len(probs) > 0: # попробовать 100 раз (максимум), если не выдаёт ошибку
                 moveIdx = probs.argmax()
-                try: #TODO should not have try here, but was a bug with idx 499 if it is black to move
+                try:
                     uciMove = decodeMove(moveIdx, board)
-                    if (uciMove is None): #could not decode
+                    if (uciMove is None): # Если не смог декодировать
                         probs = np.delete(probs, moveIdx)
                         continue
                     move = chess.Move.from_uci(str(uciMove))
-                    if (move in board.legal_moves): #if legal, return, else: loop continues after deleting the move
+                    if (move in board.legal_moves): # Если ход возможен - возврат, иначе - удалить ход и продолжить цикл
                         return move 
                 except:
                     pass
-                probs = np.delete(probs, moveIdx) #TODO probably better way to do this, but it is not too time critical as it is only for predictions
-                                             #remove the move so its not chosen again next iteration
-            
-            #TODO can return random move here as well!
-            return None #if no legal moves found, return None
+                probs = np.delete(probs, moveIdx) 
+                # Реализация не самая лучшая, возможны варианты улучшения:
+                # 1) удалить ход, чтобы он не выбирался снова в следующей итерации
+                # 2) Возвращать случайный ход
+            return None # Если не найдено возможных ходов, вернуть None
         
-        #helper functions for training
+# Вспомогательные функции для обучения
 def train_one_epoch(model, optimizer, loss_fn, epoch_index, tb_writer):
     running_loss = 0.
     last_loss = 0.
 
-    # Here, you use enumerate(training_loader) instead of
-    # iter(training_loader) so that you can track the batch
-    # index and do some intra-epoch reporting
+    # Здесь мы используем enumerate(training_loader) вместо
+    # iter(training_loader) чтобы отслеживать индекс пакета
+    # и делать некоторые отчеты внутри эпохи.
     for i, data in enumerate(training_loader):
 
-        # Every data instance is an input + label pair
+        # Каждый экземпляр данных представляет собой пару (ввод + метки).
         inputs, labels = data
 
-        # Zero your gradients for every batch!
+        # Обнуление градиентов для каждой партии
         optimizer.zero_grad()
 
-        # Make predictions for this batch
+        # Сделать прогноз для данной партии
         outputs = model(inputs)
 
-        # Compute the loss and its gradients
+        # Вычислите потери и их градиенты
         loss = loss_fn(outputs, labels)
         loss.backward()
 
-        # Adjust learning weights
+        # Отрегулировать веса обучения
         optimizer.step()
 
-        # Gather data and report
+        # Соберать данные и отправить отчет
         running_loss += loss.item()
         if i % 1000 == 999:
-            last_loss = running_loss / 1000 # loss per batch
+            last_loss = running_loss / 1000 # потери на партию
             # print('  batch {} loss: {}'.format(i + 1, last_loss))
             tb_x = epoch_index * len(training_loader) + i + 1
             tb_writer.add_scalar('Loss/train', last_loss, tb_x)
@@ -367,9 +368,9 @@ def train_one_epoch(model, optimizer, loss_fn, epoch_index, tb_writer):
 
     return last_loss
 
-#the 3 functions below help store the best model you have created yet
+# 3 функции ниже помогут сохранить лучшую модель
 def createBestModelFile():
-    #first find best model if it exists:
+    # Сначала найти лучшую модель, если она существует:
     folderPath = Path('./savedModels')
     if (not folderPath.exists()):
         os.mkdir(folderPath)
@@ -377,9 +378,9 @@ def createBestModelFile():
     path = Path('./savedModels/bestModel.txt')
 
     if (not path.exists()):
-        #create the files
+        # Создать файлы
         f = open(path, "w")
-        f.write("10000000") #set to high number so it is overwritten with better loss
+        f.write("10000000") # ставим большое число, чтобы оно перезаписывалось с меньшими потерями.
         f.write("\ntestPath")
         f.close()
 

@@ -7,15 +7,16 @@ import numpy as np
 import os
 import glob
 import time
+from multiprocessing import Pool
 
 
 
-#helper functions:
+
+# Вспомогательная функция:
 def checkEndCondition(board):
 	if (board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.can_claim_fifty_moves() or board.can_claim_draw()):
 		return True
 	return False
-
 
 
 
@@ -43,11 +44,11 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 		move = moves[i]
 		testBoard.push_san(move)
 	return testBoard
-#save
+# Сохранение
 def findNextIdx():
 	files = (glob.glob(r"data\rawData\*.npy"))
 	if (len(files) == 0):
-		return 1 #if no files, return 1
+		return 1 # Если файла нет, вернуть 1
 	highestIdx = 0
 	for f in files:
 		file = f
@@ -58,7 +59,7 @@ def findNextIdx():
 
 def mineGames(numGames : int):
 	"""mines numGames games of moves"""
-	MAX_MOVES = 500 #don't continue games after this number
+	MAX_MOVES = 500 # Не продолжать игру при достижении данного количества ходов
 
 	for i in range(numGames):
 		currentGameMoves = []
@@ -67,9 +68,9 @@ def mineGames(numGames : int):
 		stockfish.set_position([])
 
 		for i in range(MAX_MOVES):
-			#randomly choose from those 3 moves
+			# Случайно выбирать из данных трёх ходов
 			moves = stockfish.get_top_moves(3)
-			#if less than 3 moves available, choose first one, if none available, exit
+			# Если доступно меньше трёх ходов, то выбрать первый, если доступных ходов нет, то выйти
 			if (len(moves) == 0):
 				print("game is over")
 				break
@@ -81,8 +82,8 @@ def mineGames(numGames : int):
 				move = random.choices(moves, weights=(80, 15, 5), k=1)[0]["Move"]
 
 			currentGamePositions.append(stockfish.get_fen_position())
-			currentGameMoves.append(move) #make sure to add str version of move before changing format
-			move = chess.Move.from_uci(str(move)) #convert to format chess package likes
+			currentGameMoves.append(move) # Убедиться, что создана стринговая версия хода перед сменой формата
+			move = chess.Move.from_uci(str(move)) # Конвертировать в формат chess-package
 			board.push(move)
 			stockfish.set_position(currentGameMoves)
 			if (checkEndCondition(board)):
@@ -91,8 +92,10 @@ def mineGames(numGames : int):
 		saveData(currentGameMoves, currentGamePositions)
 	
 
-start_time = time.time()
-mineGames(100)
-end_time = time.time()
-elapsed_time = end_time - start_time
-print('Elapsed time: ', elapsed_time)
+if __name__ == '__main__':
+	start_time = time.time()
+	with Pool(12) as p:
+		p.map(mineGames,[1,1,1,1,1,1])
+	end_time = time.time()
+	elapsed_time = end_time - start_time
+	print('Elapsed time: ', elapsed_time)
