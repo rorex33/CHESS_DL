@@ -9,16 +9,11 @@ import glob
 import time
 from multiprocessing import Pool
 
-
-
-
 # Вспомогательная функция:
 def checkEndCondition(board):
 	if (board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.can_claim_fifty_moves() or board.can_claim_draw()):
 		return True
 	return False
-
-
 
 def saveData(moves, positions):
 	moves = np.array(moves).reshape(-1, 1)
@@ -44,6 +39,7 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 		move = moves[i]
 		testBoard.push_san(move)
 	return testBoard
+
 # Сохранение
 def findNextIdx():
 	files = (glob.glob(r"data\rawData\*.npy"))
@@ -93,9 +89,12 @@ def mineGames(numGames : int):
 	
 
 if __name__ == '__main__':
+	gamePerCore = 1500
+	amountOfGamesArray6C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
 	start_time = time.time()
-	with Pool(12) as p:
-		p.map(mineGames,[1,1,1,1,1,1])
+	with Pool(6) as p:
+		p.map(mineGames,amountOfGamesArray6C)
 	end_time = time.time()
 	elapsed_time = end_time - start_time
-	print('Elapsed time: ', elapsed_time)
+	print('Elapsed time: ', elapsed_time/60)
+	print('Amount of games per core: ', gamePerCore)

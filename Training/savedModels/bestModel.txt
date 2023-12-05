@@ -1,0 +1,2 @@
+5.317039966583252
+./Training/savedModels/best
