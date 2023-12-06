@@ -1,2 +1,2 @@
-5.317039966583252
-./Training/savedModels/best
+4.671081066131592
+Training/savedModels/model_20231206_005250_64
