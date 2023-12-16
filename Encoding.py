@@ -226,6 +226,8 @@ def encodeAllMovesAndPositions():
                     encodedPositions.append(encodeBoardFromFen(positions[i]))
                 except:
                     print(f'error in file: {f}')
+                    with open('EncodingErrors.txt', 'a') as w:
+                        w.write(f'{f} \n')
                     print("Turn: ", board.turn)
                     print(moves[i])
                     print(positions[i])

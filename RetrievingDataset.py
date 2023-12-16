@@ -89,11 +89,12 @@ def mineGames(numGames : int):
 	
 
 if __name__ == '__main__':
-	gamePerCore = 1500
-	amountOfGamesArray6C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
+	gamePerCore = 200
+	#amountOfGamesArray6C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
+	amountOfGamesArray10C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
 	start_time = time.time()
-	with Pool(6) as p:
-		p.map(mineGames,amountOfGamesArray6C)
+	with Pool(10) as p:
+		p.map(mineGames, amountOfGamesArray10C)
 	end_time = time.time()
 	elapsed_time = end_time - start_time
 	print('Elapsed time: ', elapsed_time/60)
