@@ -13,7 +13,7 @@ from gym_chess.alphazero.move_encoding import utils
 from pathlib import Path
 from typing import Optional
 
-from MainTraining import *
+from TrainingEncodDecod import *
 
 # Модель нейронной сети
 

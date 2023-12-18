@@ -212,4 +212,3 @@ def encodeBoard(board: chess.Board) -> np.array:
  array[:, :, 13] = board.is_repetition(3)
 
  return array
-

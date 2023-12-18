@@ -89,7 +89,7 @@ def mineGames(numGames : int):
 	
 
 if __name__ == '__main__':
-	gamePerCore = 200
+	gamePerCore = 1
 	#amountOfGamesArray6C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
 	amountOfGamesArray10C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
 	start_time = time.time()

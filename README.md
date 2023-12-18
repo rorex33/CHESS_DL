@@ -3,7 +3,7 @@
 
 data - содержит в себе два каталога:
     rawData - для партий, генерируемых в RetrievingDataset.py.
-    preparedData - подготовленная для обчения информация о партиях, обработанная в  Encoding.py.
+    preparedData - подготовленная для обучения информация о партиях, обработанная в  Encoding.py.
 
 stockfish - ИИ stockfish для игры в шахматы.
 

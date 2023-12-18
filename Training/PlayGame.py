@@ -20,7 +20,7 @@ from Model import Model
 saved_model = Model()
 
 # Загрузить лучшую модель
-f = open("./Training/savedModels/bestModel.txt", "r")
+f = open("C:/Users/Ivan/Desktop/CHESS_DL/Training/savedModels/bestModel.txt", "r")
 bestLoss = float(f.readline())
 model_path = f.readline()
 f.close()

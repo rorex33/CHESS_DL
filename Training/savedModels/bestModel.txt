@@ -1,2 +1,2 @@
 4.226729869842529
-Training/savedModels/model_20231212_185402_59
+C:\Users\Ivan\Desktop\CHESS_DL\Training\savedModels\model_20231212_185402_59
