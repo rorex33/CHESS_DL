@@ -21,7 +21,7 @@ from TrainingEncodDecod import *
 
 
 # Гиперпараметры
-EPOCHS = 500
+EPOCHS = 250
 LEARNING_RATE = 0.001
 MOMENTUM = 0.9
 
