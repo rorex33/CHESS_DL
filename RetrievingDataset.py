@@ -8,26 +8,45 @@ import os
 import glob
 import time
 from multiprocessing import Pool
+import configparser
+
+#Парсинг конфига
+config = configparser.ConfigParser()
+config.readfp(open(r'config.txt'))
+
+rawDataPath = config.get('GENERAL', 'rawDataPath')
+dataPath = config.get('GENERAL', 'dataPath')
+
+gamesPerCore = config.get('RetrievingDataset', 'gamesPerCore')
+for6cores = config.get('RetrievingDataset', 'for6cores')
 
 # Вспомогательная функция:
 def checkEndCondition(board):
+	"""
+	Функция для проверки завершающей позиции.
+	"""
 	if (board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.can_claim_threefold_repetition() or board.can_claim_fifty_moves() or board.can_claim_draw()):
 		return True
 	return False
 
 def saveData(moves, positions):
+	'''
+    Функция для сохранения ходов и позиций.
+    '''
 	moves = np.array(moves).reshape(-1, 1)
 	positions = np.array(positions).reshape(-1,1)
 	movesAndPositions = np.concatenate((moves, positions), axis = 1)
 
 	nextIdx = findNextIdx()
-	np.save(f"data/rawData/movesAndPositions{nextIdx}.npy", movesAndPositions)
+	np.save(f"{rawDataPath}/movesAndPositions{nextIdx}.npy", movesAndPositions)
 	print("Saved successfully")
 
 
 def runGame(numMoves, filename = "movesAndPositions1.npy"):
-	"""run a game you stored"""
-	testing = np.load(f"data/{filename}")
+	"""
+	Функция для запуска сохраненной игры (тестирование).
+	"""
+	testing = np.load(f"{dataPath}/{filename}")
 	moves = testing[:, 0]
 	if (numMoves > len(moves)):
 		print("Must enter a lower number of moves than maximum game length. Game length here is: ", len(moves))
@@ -40,9 +59,12 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 		testBoard.push_san(move)
 	return testBoard
 
-# Сохранение
+# Основные функции
 def findNextIdx():
-	files = (glob.glob(r"data\rawData\*.npy"))
+	"""
+	Функция для поиска индексов существующих файлов. Если файла с таким индексам нет, то возвращает 1. Иначе возвращает индекс + 1. 
+	"""
+	files = (glob.glob(f"{rawDataPath}/*.npy"))
 	if (len(files) == 0):
 		return 1 # Если файла нет, вернуть 1
 	highestIdx = 0
@@ -54,7 +76,9 @@ def findNextIdx():
 	return int(highestIdx)+1
 
 def mineGames(numGames : int):
-	"""mines numGames games of moves"""
+	"""
+	Функция для майнинга партий.
+	"""
 	MAX_MOVES = 500 # Не продолжать игру при достижении данного количества ходов
 
 	for i in range(numGames):
@@ -89,13 +113,9 @@ def mineGames(numGames : int):
 	
 
 if __name__ == '__main__':
-	gamePerCore = 1
-	#amountOfGamesArray6C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
-	amountOfGamesArray10C = [gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore, gamePerCore]
 	start_time = time.time()
-	with Pool(10) as p:
-		p.map(mineGames, amountOfGamesArray10C)
+	with Pool(6) as p:
+		p.map(mineGames, for6cores)
 	end_time = time.time()
 	elapsed_time = end_time - start_time
 	print('Elapsed time: ', elapsed_time/60)
-	print('Amount of games per core: ', gamePerCore)
