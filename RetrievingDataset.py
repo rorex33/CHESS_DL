@@ -111,11 +111,13 @@ def mineGames(numGames : int):
 				break
 		saveData(currentGameMoves, currentGamePositions)
 	
-
+# MAIN функция
 if __name__ == '__main__':
-	start_time = time.time()
+	start_time = time.time() # для отслеживания временных затрат, начало отсчёта
+
 	with Pool(6) as p:
 		p.map(mineGames, for6cores)
-	end_time = time.time()
+
+	end_time = time.time() # для отслеживания временных затрат, конец отсчёта
 	elapsed_time = end_time - start_time
 	print('Elapsed time: ', elapsed_time/60)

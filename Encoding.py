@@ -15,7 +15,7 @@ def encodeBoardFromFen(fen: str) -> np.array:
 	return encodeBoard(board)
 	
 def encodeBoard(board: chess.Board) -> np.array:
-	"""Converts a board to numpy array representation."""
+	"""Конвентирует доску в nympy array представление."""
 
 	array = np.zeros((8, 8, 14), dtype=int)
 
