@@ -6,6 +6,7 @@ import gym.spaces
 from gym_chess.alphazero.move_encoding import utils, queenmoves, knightmoves, underpromotions
 from typing import List
 
+# Эта строка кода создает среду для обучения и тестирования алгоритма с использованием библиотеки OpenAI Gym.
 env = gym.make('ChessAlphaZero-v0')
 
 # Кодировачные функции из alpha zero:
@@ -43,11 +44,15 @@ def encodeBoard(board: chess.Board) -> np.array:
 
 
 def decodeMove(move: int):
-	return env.decode(move)
+    """Функция декодирует целочисленный ход в его фактическое представление (в рамках среды ChessAlphaZero)."""
+    return env.decode(move)
 
-# Исправление функций кодирования из openai
+# Измененные функций кодирования из openai
 
 def encodeKnight(move: chess.Move):
+    """Кодирует ходы коня."""
+
+    # Количество различных ходов коня.
     _NUM_TYPES: int = 8
 
     #: Начальная точка хода коня находится в последнем измерении массива действий 8 x 8 x 7.
@@ -66,27 +71,42 @@ def encodeKnight(move: chess.Move):
         (+2, -1),
     )
 
+    #: Распаковка координат начальной и конечной позиций хода коня из объекта move.
     from_rank, from_file, to_rank, to_file = utils.unpack(move)
 
+    #: Вычисление разности координат между начальной и конечной позициями хода коня.
     delta = (to_rank - from_rank, to_file - from_file)
+
+    #: Проверка, является ли заданное направление движения коня допустимым.
     is_knight_move = delta in _DIRECTIONS
     
     if not is_knight_move:
         return None
 
+    #: Определение типа хода коня, основанного на индексе направления в структуре _DIRECTIONS.
     knight_move_type = _DIRECTIONS.index(delta)
+    #: Вычисление типа хода с учетом смещения.
     move_type = _TYPE_OFFSET + knight_move_type
 
+    #: преобразования трехмерных координат (ранг, файл, тип хода) 
+    #: в одномерный индекс в соответствии с заданными размерностями.
     action = np.ravel_multi_index(
         multi_index=((from_rank, from_file, move_type)),
         dims=(8, 8, 73)
     )
 
+    #: Возвращение закодированного хода коня.
     return action
 
 
 def encodeQueen(move: chess.Move):
+    """Кодирует ходы ферзя."""
+
+    #: Общее количество различных ходов ферзя.
     _NUM_TYPES: int = 56 # = 8 направлений * 7 (максимальное расстояние до квадрата)
+
+    #: Набор возможных направлений хода коня, закодированный как
+    #: (delta rank, delta square).
     _DIRECTIONS = utils.IndexedTuple(
         (+1,  0),
         (+1, +1),
@@ -98,15 +118,21 @@ def encodeQueen(move: chess.Move):
         (+1, -1),
     )
 
+    #: Распаковка координат начальной и конечной позиций хода ферзя из объекта move.
     from_rank, from_file, to_rank, to_file = utils.unpack(move)
 
+    #: Вычисление разности координат между начальной и конечной позициями хода ферзя.
     delta = (to_rank - from_rank, to_file - from_file)
 
+    #: Проверки, является ли движение ферзя горизонтальным / вертикальным / диагональным.
     is_horizontal = delta[0] == 0
     is_vertical = delta[1] == 0
     is_diagonal = abs(delta[0]) == abs(delta[1])
+
+    #: Проверка, является ли ферзь продвинутой пешкой или нет.
     is_queen_move_promotion = move.promotion in (chess.QUEEN, None)
 
+    #: Движение по горизонтали, вертикали или диагонали, и не является ли это продвинутой пешкой.
     is_queen_move = (
         (is_horizontal or is_vertical or is_diagonal) 
             and is_queen_move_promotion
@@ -115,22 +141,34 @@ def encodeQueen(move: chess.Move):
     if not is_queen_move:
         return None
 
+    #: Вычисление направления движения ферзя в виде кортежа из знаков разностей координат.
     direction = tuple(np.sign(delta))
+
+    #: Вычисление максимального значения абсолютной разности координат, 
+    #: что представляет собой максимальное расстояние движения ферзя.
     distance = np.max(np.abs(delta))
 
+    #: Определение индекса направления движения в структуре _DIRECTIONS.
     direction_idx = _DIRECTIONS.index(direction)
+    #: Вычисление индекса расстояния движения ферзя.
     distance_idx = distance - 1
 
+    #: Преобразования двухмерных координат (направление, расстояние) 
+    #: в одномерный индекс в соответствии с заданными размерностями.
     move_type = np.ravel_multi_index(
         multi_index=([direction_idx, distance_idx]),
         dims=(8,7)
     )
 
+    #: Преобразования трехмерных координат (ранг, файл, тип хода) 
+    #: в одномерный индекс в соответствии с заданными размерностями.
     action = np.ravel_multi_index(
         multi_index=((from_rank, from_file, move_type)),
         dims=(8, 8, 73)
     )
 
+    
+    #: Возвращение закодированного хода ферзя.
     return action
 
 

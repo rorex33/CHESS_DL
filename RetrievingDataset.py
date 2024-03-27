@@ -17,8 +17,8 @@ config.readfp(open(r'config.txt'))
 rawDataPath = config.get('GENERAL', 'rawDataPath')
 dataPath = config.get('GENERAL', 'dataPath')
 
-gamesPerCore = config.get('RetrievingDataset', 'gamesPerCore')
-for6cores = config.get('RetrievingDataset', 'for6cores')
+gamesPerCore = int(config.get('RetrievingDataset', 'gamesPerCore'))
+for6cores =  [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
 
 # Вспомогательная функция:
 def checkEndCondition(board):

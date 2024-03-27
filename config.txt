@@ -3,7 +3,4 @@ rawDataPath = E:/ML_PROJECT/data/rawData
 dataPath = E:/ML_PROJECT/data
 
 [RetrievingDataset]
-gamesPerCore = 1
-for6cores = [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
-for8cores = [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
-for12cores = [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
+gamesPerCore = 50
