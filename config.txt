@@ -1,6 +1,7 @@
 [GENERAL]
 rawDataPath = E:/ML_PROJECT/data/rawData
+preparedDataPath = E:/ML_PROJECT/data/preparedData
 dataPath = E:/ML_PROJECT/data
 
 [RetrievingDataset]
-gamesPerCore = 50
+gamesPerCore = 2
