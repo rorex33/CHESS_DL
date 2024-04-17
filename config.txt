@@ -1,7 +1,11 @@
 [GENERAL]
-rawDataPath = E:/ML_PROJECT/data/rawData
-preparedDataPath = E:/ML_PROJECT/data/preparedData
-dataPath = E:/ML_PROJECT/data
+RAW_DATA_PATH = E:/ML_PROJECT/data/rawData
+PREPARED_DATA_PATH = E:/ML_PROJECT/data/preparedData
+DATA_PATH = E:/ML_PROJECT/data
 
 [RetrievingDataset]
-gamesPerCore = 2
+GAMES_PER_CORE = 2
+
+[MainTraining]
+FRACTION_OF_DATA = 1
+BATCH_SIZE = 128

@@ -14,10 +14,10 @@ import configparser
 config = configparser.ConfigParser()
 config.readfp(open(r'config.txt'))
 
-rawDataPath = config.get('GENERAL', 'rawDataPath')
-dataPath = config.get('GENERAL', 'dataPath')
+rawDataPath = config.get('GENERAL', 'RAW_DATA_PATH')
+dataPath = config.get('GENERAL', 'DATA_PATH')
 
-gamesPerCore = int(config.get('RetrievingDataset', 'gamesPerCore'))
+gamesPerCore = int(config.get('RetrievingDataset', 'GAMES_PER_CORE'))
 for6cores =  [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
 
 # Вспомогательная функция:

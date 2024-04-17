@@ -11,8 +11,8 @@ import configparser
 config = configparser.ConfigParser()
 config.readfp(open(r'config.txt'))
 
-rawDataPath = config.get('GENERAL', 'rawDataPath')
-preparedDataPath = config.get('GENERAL', 'preparedDataPath')
+rawDataPath = config.get('GENERAL', 'RAW_DATA_PATH')
+preparedDataPath = config.get('GENERAL', 'PREPARED_DATA_PATH')
 
 # Эта строка кода создает среду для обучения и тестирования алгоритма с использованием библиотеки OpenAI Gym.
 env = gym.make('ChessAlphaZero-v0')
