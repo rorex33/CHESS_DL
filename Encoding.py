@@ -14,10 +14,11 @@ config.readfp(open(r'config.txt'))
 rawDataPath = config.get('GENERAL', 'RAW_DATA_PATH')
 preparedDataPath = config.get('GENERAL', 'PREPARED_DATA_PATH')
 
-# Эта строка кода создает среду для обучения и тестирования алгоритма с использованием библиотеки OpenAI Gym.
+#: Эта строка кода создает среду для обучения и тестирования алгоритма с использованием библиотеки OpenAI Gym.
 env = gym.make('ChessAlphaZero-v0')
 
-# КОДИРОВАНИЕ ФУНКЦИЙ ИЗ ALPHA ZERO:
+
+# КОДИРОВАНИЕ ФУНКЦИЙ ИЗ ALPHA ZERO #
 
 def encodeBoardFromFen(fen: str) -> np.array:
     #: Конвертация доски из строки FEN в массив NumPy.
@@ -37,15 +38,15 @@ def encodeBoard(board: chess.Board) -> np.array:
 		rank, file = chess.square_rank(square), chess.square_file(square)
 		piece_type, color = piece.piece_type, piece.color
 	
-        # Первые 6 плоскостей кодируют фигуры активного игрока. 
-        # Следующие 6 - фигуры активного опонента.
-        # Данный класс хранит доски, ориентированные на белого игрока.
-        # Белые считаются за активного игрока.
+        #: Первые 6 плоскостей кодируют фигуры активного игрока. 
+        #: Следующие 6 - фигуры активного опонента.
+        #: Данный класс хранит доски, ориентированные на белого игрока.
+        #: Белые считаются за активного игрока.
         #: Определение смещения в массиве для текущего цвета фигуры.
 		offset = 0 if color == chess.WHITE else 6
 		
 		#: Вычисление индекса типа фигуры в массиве. Типы фигур в 
-		# шахматах начинаются с единицы, поэтому вычитается 1.
+		#: шахматах начинаются с единицы, поэтому вычитается 1.
 		idx = piece_type - 1
 
         #: Установка соответствующего элемента массива в 1, 
@@ -64,12 +65,12 @@ def decodeMove(move: int):
     """Функция декодирует целочисленный ход в его фактическое представление (в рамках среды ChessAlphaZero)."""
     return env.decode(move)
 
-# ИЗМЕНЕННЫЕ ФУКЦИИ КОДИРОВАНИЯ ИЗ OPENAI
+# ИЗМЕНЕННЫЕ ФУКЦИИ КОДИРОВАНИЯ ИЗ OPENAI #
 
 def encodeKnight(move: chess.Move):
     """Кодирует ходы коня."""
 
-    # Количество различных ходов коня.
+    #: Количество различных ходов коня.
     _NUM_TYPES: int = 8
 
     #: Начальная точка хода коня находится в последнем измерении массива действий 8 x 8 x 7.
@@ -294,7 +295,7 @@ def encodeAllMovesAndPositions():
     #: В начале ход передаётся чёрным, это измениться при первом запуске.
     board.turn = False
 
-    # Получение списка файлов в папке:
+    #: Получение списка файлов в папке:
     files = os.listdir(f'{rawDataPath}')
 
     #: Цикл по всем файлам в папке.
@@ -309,7 +310,7 @@ def encodeAllMovesAndPositions():
         encodedMoves = []
         encodedPositions = []
 
-        # Цикл по всем ходам.
+        #: Цикл по всем ходам.
         for i in range(len(moves)):
 
             #: Переключение очереди хода на противоположного игрока.
@@ -320,8 +321,8 @@ def encodeAllMovesAndPositions():
                 encodedPositions.append(encodeBoardFromFen(positions[i]))
             except:
                 try:
-                    # Сменить ход, так как мы иногда пропускаем ходы, 
-                    # возможно, нам придется сменить ход
+                    #: Сменить ход, так как мы иногда пропускаем ходы, 
+                    #: возможно, нам придется сменить ход
                     board.turn = (not board.turn)
                     encodedMoves.append(encodeMove(moves[i], board)) 
                     encodedPositions.append(encodeBoardFromFen(positions[i]))

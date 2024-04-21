@@ -10,7 +10,7 @@ import time
 from multiprocessing import Pool
 import configparser
 
-#Парсинг конфига
+# ПАРСИНГ КОНФИГА #
 config = configparser.ConfigParser()
 config.readfp(open(r'config.txt'))
 
@@ -59,7 +59,9 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 		testBoard.push_san(move)
 	return testBoard
 
-# Основные функции
+
+# ОСНОВНЫЕ ФУНКЦИИ #
+
 def findNextIdx():
 	"""
 	Функция для поиска индексов существующих файлов. Если файла с таким индексам нет, то возвращает 1. Иначе возвращает индекс + 1. 
@@ -88,9 +90,9 @@ def mineGames(numGames : int):
 		stockfish.set_position([])
 
 		for i in range(MAX_MOVES):
-			# Случайно выбирать из данных трёх ходов
+			#: Случайно выбирать из данных трёх ходов
 			moves = stockfish.get_top_moves(3)
-			# Если доступно меньше трёх ходов, то выбрать первый, если доступных ходов нет, то выйти
+			#: Если доступно меньше трёх ходов, то выбрать первый, если доступных ходов нет, то выйти
 			if (len(moves) == 0):
 				print("game is over")
 				break
@@ -111,7 +113,8 @@ def mineGames(numGames : int):
 				break
 		saveData(currentGameMoves, currentGamePositions)
 	
-# MAIN функция
+# MAIN ФУНКЦИЯ #
+
 if __name__ == '__main__':
 	start_time = time.time() # для отслеживания временных затрат, начало отсчёта
 

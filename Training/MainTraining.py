@@ -16,7 +16,7 @@ import configparser
 
 from TrainingEncodDecod import *
 
-# Парсинг конфига
+# ПАРСИНГ КОНФИГА #
 config = configparser.ConfigParser()
 config.readfp(open(r'../config.txt'))
 
@@ -26,10 +26,9 @@ preparedDataPath = config.get('GENERAL', 'PREPARED_DATA_PATH')
 fractionOfData= int(config.get('MainTraining', 'FRACTION_OF_DATA'))
 batchSize = int(config.get('MainTraining', 'BATCH_SIZE'))
 
-# DATASET
+## DATASET ##
 
-
-# ЗАГРУЗКА ДАННЫХ ОБУЧЕНИЯ
+# ЗАГРУЗКА ДАННЫХ ОБУЧЕНИЯ #
 
 #: Списки, которые будут содержать все ходы и позиции соответственно.
 allMoves = []
@@ -71,7 +70,7 @@ assert len(allMoves) == len(allBoards), "MUST BE OF SAME LENGTH"
 trainDataIdx = int(len(allMoves) * 0.8)
 
 
-# ПЕРЕНОС ДАННЫХ НА GPU
+# ПЕРЕНОС ДАННЫХ НА GPU #
 
 #: Определяет устройство (GPU или CPU) для обработки данных.
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -81,7 +80,7 @@ allBoards = torch.from_numpy(np.asarray(allBoards)).to(device)
 allMoves = torch.from_numpy(np.asarray(allMoves)).to(device)
 
 
-# СОХРАНЕНИЕ ЗАГРУЗЧИКОВ ДАННЫХ
+# СОХРАНЕНИЕ ЗАГРУЗЧИКОВ ДАННЫХ #
 
 #: Объекты TensorDataset, содержащие обучающие и тестовые данные соответственно.
 training_set = torch.utils.data.TensorDataset(allBoards[:trainDataIdx], allMoves[:trainDataIdx])
@@ -93,7 +92,7 @@ training_loader = torch.utils.data.DataLoader(training_set, batch_size = batchSi
 validation_loader = torch.utils.data.DataLoader(test_set, batch_size = batchSize, shuffle=False)
 
 
-# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ОБУЧЕНИЯ
+# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ОБУЧЕНИЯ #
 
 def train_one_epoch(model, optimizer, loss_fn, epoch_index, tb_writer):
     """
@@ -110,7 +109,7 @@ def train_one_epoch(model, optimizer, loss_fn, epoch_index, tb_writer):
     #: чтобы получить индексы пакетов, что позволяет нам отслеживать прогресс обучения.
     for i, data in enumerate(training_loader):
 
-        # Извлекаем входные данные и соответствующие метки из текущего пакета данных.
+        #: Извлекаем входные данные и соответствующие метки из текущего пакета данных.
         inputs, labels = data
 
         #: обнуляем градиенты перед каждым проходом обратного распространения, 
@@ -150,7 +149,7 @@ def train_one_epoch(model, optimizer, loss_fn, epoch_index, tb_writer):
     return last_loss
 
 
-# ФУНКЦИИ ДЛЯ СОХРАНЕНИЯ ЛУЧШЕЙ МОДЕЛИ
+# ФУНКЦИИ ДЛЯ СОХРАНЕНИЯ ЛУЧШЕЙ МОДЕЛИ #
 
 def createBestModelFile():
     """

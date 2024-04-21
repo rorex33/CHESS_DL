@@ -15,7 +15,7 @@ from typing import Optional
 
 from TrainingEncodDecod import *
 
-# МОДЕЛЬ НЕЙРОННЙО СЕТИ
+# МОДЕЛЬ НЕЙРОННЙО СЕТИ #
 
 class Model(torch.nn.Module):
 

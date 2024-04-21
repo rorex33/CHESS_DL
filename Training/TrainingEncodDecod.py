@@ -12,10 +12,16 @@ from gym_chess.alphazero.move_encoding import utils
 from pathlib import Path
 from typing import Optional
 
-# Вспомогательный метод:
+## ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ##
 
-# Декодирование ходов из idx в uci нотацию
+# ДЕКОДИРОВАНИЕ ХОДОВ ИХ IDX В UCI НОТАЦИЮ:
+
 def _decodeKnight(action: int) -> Optional[chess.Move]:
+    """
+    Пинимает на вход одно целочисленное значение (action) и возвращает ход ферзя в формате UCI. 
+    """
+
+    #: Количество различных ходов коня.
     _NUM_TYPES: int = 8
 
     #: Начальная точка хода коня находится в последнем измерении массива действий 8 x 8 x 73
@@ -34,28 +40,47 @@ def _decodeKnight(action: int) -> Optional[chess.Move]:
         (+2, -1),
     )
 
+    #: Раскрутка одномерного индекса action в трехмерный массив с размерностью (8, 8, 73)
+    #: 8 x 8 представляют координаты начальной позиции коня, 
+    #: а 73 представляют различные типы ходов.
     from_rank, from_file, move_type = np.unravel_index(action, (8, 8, 73))
 
+    #: Эта строка проверяет, является ли тип хода действительным ходом коня, 
+    #: основываясь на диапазоне индексов, определенных _TYPE_OFFSET и _NUM_TYPES.
     is_knight_move = (
         _TYPE_OFFSET <= move_type
         and move_type < _TYPE_OFFSET + _NUM_TYPES
     )
 
+    #: Если тип хода не является действительным ходом коня, функция возвращает None.
     if not is_knight_move:
         return None
 
+    #: Вычисоение индекса типа хода коня в пределах диапазона от 0 до _NUM_TYPES.
     knight_move_type = move_type - _TYPE_OFFSET
 
+    #: Извлечение изменения строки и столбца для конкретного типа хода коня, 
+    #: используя knight_move_type.
     delta_rank, delta_file = _DIRECTIONS[knight_move_type]
 
+    #: Вычисление конечных координат для хода коня.
     to_rank = from_rank + delta_rank
     to_file = from_file + delta_file
 
+    #: Формирование хода коня, 
+    #: используя начальные и конечные координаты, 
+    #: (ход в формате UCI).
     move = utils.pack(from_rank, from_file, to_rank, to_file)
+
+    #: Возврат хода.
     return move
 
-def _decodeQueen(action: int) -> Optional[chess.Move]:
+#################################
 
+def _decodeQueen(action: int) -> Optional[chess.Move]:
+    """
+    Пинимает на вход одно целочисленное значение (action) и возвращает ход ферзя в формате UCI. 
+    """
     _NUM_TYPES: int = 56 # = 8 направлений * 7 (максимальное расстояние до квадрата)
 
     #: Набор возможных направлений хода ферзя, закодированный как
