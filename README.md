@@ -41,3 +41,36 @@ justPY.py - python-файл для разных вспомогательных �
 6) Закоментировать + конфиг RunTraining - DONE
 7) Закоментировать + конфиг TrainingEncodDecod - DONE
 8) Реализовать дообучение
+
+
+# Старые значения для нейронных слоёв
+#: Определяют линейные слои нейронной сети.
+    self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 500)
+    self.linear2 = torch.nn.Linear(500, 500)
+    self.linear3 = torch.nn.Linear(500, 500)
+    self.linear4 = torch.nn.Linear(500, 200)
+    self.linear5 = torch.nn.Linear(200, self.OUTPUT_SIZE)
+
+5.326042175292969 (5000 игр)
+        #: Определяют линейные слои нейронной сети.
+        self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 128)
+        self.linear2 = torch.nn.Linear(128, 128)
+        self.linear3 = torch.nn.Linear(128, 128)
+        self.linear4 = torch.nn.Linear(128, 64)
+        self.linear5 = torch.nn.Linear(64, self.OUTPUT_SIZE)
+
+6.540229320526123
+        #: Определяют линейные слои нейронной сети.
+        self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 512)
+        self.linear2 = torch.nn.Linear(512, 512)
+        self.linear3 = torch.nn.Linear(512, 512)
+        self.linear4 = torch.nn.Linear(512, 128)
+        self.linear5 = torch.nn.Linear(128, self.OUTPUT_SIZE)
+
+5.933191299438477
+        #: Определяют линейные слои нейронной сети.
+        self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 32)
+        self.linear2 = torch.nn.Linear(32, 32)
+        self.linear3 = torch.nn.Linear(32, 32)
+        self.linear4 = torch.nn.Linear(32, 16)
+        self.linear5 = torch.nn.Linear(16, self.OUTPUT_SIZE)

@@ -20,7 +20,9 @@ dataPath = config.get('GENERAL', 'DATA_PATH')
 gamesPerCore = int(config.get('RetrievingDataset', 'GAMES_PER_CORE'))
 for6cores =  [gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore, gamesPerCore]
 
-# Вспомогательная функция:
+
+# ВСПОМОГАТЕЛЬНЫЕ ФУКНЦИИ #
+
 def checkEndCondition(board):
 	"""
 	Функция для проверки завершающей позиции.
@@ -83,6 +85,9 @@ def mineGames(numGames : int):
 	"""
 	MAX_MOVES = 500 # Не продолжать игру при достижении данного количества ходов
 
+	#: Счётчик игр в данном пуле (в данной работающей фукнции)
+	countOfGames = 1
+
 	for i in range(numGames):
 		currentGameMoves = []
 		currentGamePositions = []
@@ -94,7 +99,7 @@ def mineGames(numGames : int):
 			moves = stockfish.get_top_moves(3)
 			#: Если доступно меньше трёх ходов, то выбрать первый, если доступных ходов нет, то выйти
 			if (len(moves) == 0):
-				print("game is over")
+				print(f"game {countOfGames}/{gamesPerCore} is over")
 				break
 			elif (len(moves) == 1):
 				move = moves[0]["Move"]
@@ -109,9 +114,11 @@ def mineGames(numGames : int):
 			board.push(move)
 			stockfish.set_position(currentGameMoves)
 			if (checkEndCondition(board)):
-				print("game is over")
+				print(f"game {countOfGames}/{gamesPerCore} is over")
 				break
+		countOfGames = countOfGames + 1
 		saveData(currentGameMoves, currentGamePositions)
+		
 	
 # MAIN ФУНКЦИЯ #
 
