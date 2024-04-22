@@ -35,10 +35,10 @@ class Model(torch.nn.Module):
         self.activation = torch.nn.ReLU()
 
         #: Определяют линейные слои нейронной сети.
-        self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 1000)
-        self.linear2 = torch.nn.Linear(1000, 1000)
-        self.linear3 = torch.nn.Linear(1000, 1000)
-        self.linear4 = torch.nn.Linear(1000, 200)
+        self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 500)
+        self.linear2 = torch.nn.Linear(500, 500)
+        self.linear3 = torch.nn.Linear(500, 500)
+        self.linear4 = torch.nn.Linear(500, 200)
         self.linear5 = torch.nn.Linear(200, self.OUTPUT_SIZE)
 
         #: Softmax используется для получения вероятностного распределения по выходам модели.
