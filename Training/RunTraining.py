@@ -115,6 +115,8 @@ for epoch in tqdm(range(epochs)):
     writer.add_scalars('Training vs. Validation Loss',
                     { 'Training' : avg_loss, 'Validation' : avg_vloss },
                     epoch_number + 1)
+    writer.add_scalar('Loss/Train', avg_loss, epoch_number + 1)
+    writer.add_scalar('Loss/Validation', avg_vloss, epoch_number + 1)
     writer.flush()
 
     # Отслеживает лучший результат (по потерям) и сохраняет новую лучшую модель.
