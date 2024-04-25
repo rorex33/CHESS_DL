@@ -41,7 +41,7 @@ bestLoss, bestModelPath = retrieveBestModelInfo()
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
 #: Создается объект SummaryWriter для записи логов TensorBoard.
-writer = SummaryWriter('Training/runs/fashion_trainer_{}'.format(timestamp))
+writer = SummaryWriter('./runs/fashion_trainer_{}'.format(timestamp))
 
 #: Переменная, отслеживающая текущее количество эпох.
 epoch_number = 0
