@@ -4,7 +4,7 @@ PREPARED_DATA_PATH = E:/ML_PROJECT/data/preparedData
 DATA_PATH = E:/ML_PROJECT/data
 
 [RetrievingDataset]
-GAMES_PER_CORE = 1
+GAMES_PER_CORE = 7500
 
 [MainTraining]
 FRACTION_OF_DATA = 1

@@ -337,13 +337,15 @@ def encodeAllMovesAndPositions():
                     break
 
         #: Сохранение закодированных ходов и позиций
-        #: в файл с именем, зависящим от индекса цикла.    
+        #: в файл с именем, зависящим от индекса цикла.
+        print(f"Index {i} passed.")    
         np.save(f'{preparedDataPath}/moves{idx}', np.array(encodedMoves))
         np.save(f'{preparedDataPath}/positions{idx}', np.array(encodedPositions))
     
 
 
 encodeAllMovesAndPositions()
+print(f"Encoding is done.")
 
 #NOTE: формаn файлов:
 #moves: (количество ходов в игре)

@@ -186,7 +186,7 @@ def saveBestModel(vloss, pathToBestModel):
     Функция используется для сохранения информации о лучшей модели в файле bestModel.txt.
     """
     #: Открываем файл для записи.
-    f = open("Training/savedModels/bestModel.txt", "w")
+    f = open("../Training/savedModels/bestModel.txt", "w")
 
     #: Записываем средние потери.
     #: Для этого преобразуем тензор PyTorch в строку

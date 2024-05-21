@@ -124,7 +124,7 @@ for epoch in tqdm(range(epochs)):
         best_vloss = avg_vloss
 
         if (bestLoss > best_vloss): # Если у данной модели потери лучше, чем у всех предыдущих моделей, то сохраняем её.
-            model_path = 'Training/savedModels/model_{}_{}'.format(timestamp, epoch_number)
+            model_path = '../Training/savedModels/model_{}_{}'.format(timestamp, epoch_number)
             torch.save(model.state_dict(), model_path)
             saveBestModel(best_vloss, model_path)
 
