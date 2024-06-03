@@ -35,7 +35,7 @@ class Model(torch.nn.Module):
         self.activation = torch.nn.ReLU()
 
         #: Инициализирует слой Dropout с вероятностью 0.5
-        self.dropout = torch.nn.Dropout(p=0.5)
+        #self.dropout = torch.nn.Dropout(p=0.5)
 
         #: Определяют линейные слои нейронной сети.
         self.linear1 = torch.nn.Linear(self.INPUT_SIZE, 128)
@@ -62,19 +62,19 @@ class Model(torch.nn.Module):
         #: Применяет линейные слои, их функцию активации и dropout входным данным последовательно.
         x = self.linear1(x)
         x = self.activation(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
 
         x = self.linear2(x)
         x = self.activation(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
 
         x = self.linear3(x)
         x = self.activation(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
 
         x = self.linear4(x)
         x = self.activation(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
 
         x = self.linear5(x)
 

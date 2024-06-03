@@ -52,11 +52,16 @@ model = Model()
 trainingType = input("Продолжить обучение лучшей модели?\n").lower()
 if trainingType in ['yes', 'y', 'ye']:
     # Загружаются параметры лучшей модели.
-    f = open("../Training/savedModels/bestModel.txt", "r")
-    firstLine = float(f.readline())
-    best_model_path = f.readline()
-    f.close()
-    model.load_state_dict(torch.load(best_model_path))
+    try:
+        with open("../Training/savedModels/bestModel.txt", "r") as f:
+            bestLoss = float(f.readline())
+            bestModelPath = f.readline().strip()
+            model.load_state_dict(torch.load(bestModelPath))
+            print(f"Model loaded from {bestModelPath} with best loss {bestLoss}")
+    except Exception as e:
+        print(f"Failed to load the best model: {e}")
+else:
+    print("Training from scratch")
 
 #: Создаются функция потерь и оптимизатор.
 #: Функция потерь - CrossEntropyLoss().
@@ -96,6 +101,9 @@ for epoch in tqdm(range(epochs)):
     with torch.no_grad():
         for i, vdata in enumerate(validation_loader):
             vinputs, vlabels = vdata
+            #: Убедиться, что входные данные и метки находяться
+            #: на одном и том же устройстве.
+            vinputs, vlabels = vinputs.to(device), vlabels.to(device) 
             voutputs = model(vinputs)
 
             vloss = loss_fn(voutputs, vlabels)

@@ -4,11 +4,11 @@ PREPARED_DATA_PATH = E:/ML_PROJECT/data/preparedData
 DATA_PATH = E:/ML_PROJECT/data
 
 [RetrievingDataset]
-GAMES_PER_CORE = 7500
+GAMES_PER_CORE = 6
 
 [MainTraining]
 FRACTION_OF_DATA = 1
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 
 [RunTraining]
 EPOCHS = 250

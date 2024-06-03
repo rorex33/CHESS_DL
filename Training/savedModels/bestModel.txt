@@ -1,2 +1,2 @@
-4.460524082183838
-../Training/savedModels/model_20240503_213000_192
+4.426182746887207
+../Training/savedModels/model_20240603_033859_0

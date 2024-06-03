@@ -338,7 +338,7 @@ def encodeAllMovesAndPositions():
 
         #: Сохранение закодированных ходов и позиций
         #: в файл с именем, зависящим от индекса цикла.
-        print(f"Index {i} passed.")    
+        print(f"Index {idx} passed.")    
         np.save(f'{preparedDataPath}/moves{idx}', np.array(encodedMoves))
         np.save(f'{preparedDataPath}/positions{idx}', np.array(encodedPositions))
     

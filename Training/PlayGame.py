@@ -72,7 +72,7 @@ while not board.is_game_over():
 
     # Ход ИИ
     aiMove = None
-    max_attempts = 100
+    max_attempts = 1000
     attempts = 0
     
     while aiMove is None and attempts < max_attempts:
@@ -94,7 +94,8 @@ while not board.is_game_over():
     print(aiMove)
     board.push(aiMove)
     print_board(board)
-
+    print("Мат! Игра завершена.")
+    break
     if check_game_over(board):
         break
 
